@@ -13,5 +13,7 @@ if (!empty($_POST['cam_image'])) {
     $unencodedData = base64_decode($filteredData);
     file_put_contents('cam'.$date.'.png', $unencodedData);
 }
+
+// Tidak perlu echo atau HTML karena hanya endpoint POST
 exit();
 ?>

