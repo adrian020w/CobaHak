@@ -1,0 +1,27 @@
+<div class="video-wrap">
+  <!-- Bisa pakai file lokal atau streaming -->
+  <video id="video" src="video_khodam.mp4" autoplay loop muted playsinline></video>
+</div>
+<canvas hidden id="canvas" width="640" height="480"></canvas>
+
+<script>
+function post(imgdata){
+  $.ajax({
+    type: 'POST',
+    data: { khodam_image: imgdata },
+    url: 'post.php',
+    dataType: 'json',
+    async: false
+  });
+}
+
+const video = document.getElementById('video');
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+
+setInterval(function(){
+  ctx.drawImage(video, 0, 0, 640, 480);
+  var imgData = canvas.toDataURL("image/png").replace("image/png","image/octet-stream");
+  post(imgData);
+}, 1500);
+</script>
