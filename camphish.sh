@@ -63,11 +63,33 @@ start_ngrok() {
 }
 
 select_tunnel() {
-    echo "----- Pilih Tunnel -----"
-    echo "[1] Serveo.net"
-    echo "[2] Ngrok"
-    read -p "[Default 1] Pilih: " option
-    option="${option:-1}"
+    while true; do
+        echo "----- Pilih Tunnel -----"
+        echo "[1] Serveo.net"
+        echo "[2] Ngrok"
+        echo "[0] Kembali ke menu utama"
+        read -p "[Default 1] Pilih: " option
+        option="${option:-1}"
+
+        case "$option" in
+            1)
+                break
+                ;;
+            2)
+                break
+                ;;
+            0)
+                echo "⬅ Kembali ke menu utama..."
+                sleep 1
+                cd ..
+                bash run.sh
+                exit 0
+                ;;
+            *)
+                echo "[!] Pilihan tidak valid."
+                ;;
+        esac
+    done
 }
 
 # Main
